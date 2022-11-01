@@ -1,1 +1,2 @@
-web: gunicorn featured_movie:app
+# Modify this Procfile to fit your needs
+web: gunicorn server:app

@@ -4,6 +4,9 @@ import random
 import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv, find_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from models import Users
 
 load_dotenv(find_dotenv())
 
@@ -16,11 +19,13 @@ TMDB_API_MOVIE_DATA_BASE_URL = 'https://api.themoviedb.org/3/movie/'
 app = Flask(__name__)
 app.secret_key = os.getenv('APP_SECRET_KEY')
 
-
 #GLOBAL_MOVIE_NUM used for page direction to specific movie page
 GLOBAL_MOVIE_NUM = 0
 trending_json_data = []
+#Global vars which will be replaced once database is figured out
 USER_VALID = None
+USERS_SET = set()
+MOVIE_REVIEWS = dict()
 
 
 def app_logic(movie, trending_json_data):
@@ -56,6 +61,7 @@ def app_logic(movie, trending_json_data):
 
     movie_details = response4.json()
     movie_tagline = movie_details['tagline']
+    movie_id = movie_details['id']
     production = movie_details['production_companies'][0]['name']
 
     genre_set = set(trending_json_data['results'][movie]['genre_ids'])
@@ -81,7 +87,7 @@ def app_logic(movie, trending_json_data):
     wiki = response5.json()
     wiki_link = 'https://en.wikipedia.org/?curid=' + str(wiki['query']['search'][0]['pageid'])
 
-    return [movie_title, movie_tagline, movie_poster_url, movie_backdrop_url, wiki_link, movie+1, movie_description, genre_string, trending_json_data]
+    return [movie_title, movie_tagline, movie_poster_url, movie_backdrop_url, wiki_link, movie+1, movie_description, genre_string, trending_json_data, movie_id]
 @app.route('/')
 def hello():
     ''' Opening Function which runs on the first load of application'''
@@ -97,7 +103,7 @@ def hello():
     html_elements = app_logic(movie, trending_json_data)
     return render_template('index.html', title=html_elements[0], tagline=html_elements[1], 
     image=html_elements[2], backImage=html_elements[3], link=html_elements[4], 
-    number=html_elements[5], info=html_elements[6], genres=html_elements[7], movieList=html_elements[8], valid=USER_VALID)
+    number=html_elements[5], info=html_elements[6], genres=html_elements[7], movieList=html_elements[8], id=html_elements[9], valid=USER_VALID, reviews=MOVIE_REVIEWS)
 
 @app.route('/direct_movie', methods=['GET', 'POST'])
 def direct():
@@ -150,8 +156,37 @@ def log_in():
 def validate_login():
     '''Function which handles HTML form leading to sign up page'''
     username = str(request.form.get("UserName"))
-    if username != 'vbe':
+    global USERS_SET
+    if not username in USERS_SET:
         return redirect(url_for('hello'))
     global USER_VALID
     USER_VALID = username
+    return redirect(url_for('hello'))
+
+@app.route('/validateSignup', methods=['GET', 'POST'])
+def validate_signup():
+    '''Function which handles HTML form leading to sign up page'''
+    username = str(request.form.get("UserName"))
+    global USERS_SET
+    if not username in USERS_SET:
+        USERS_SET.add(username)
+        global USER_VALID
+        USER_VALID = username
+        return redirect(url_for('hello'))
+    return redirect(url_for('hello'))
+
+@app.route('/addReview', methods=['GET', 'POST'])
+def new_review():
+    '''Function which handles HTML form leading to sign up page'''
+    movie_id = request.form.get("movieID")
+    rating = request.form.get("rating")
+    comments = request.form.get("comments")
+
+    review = [USER_VALID, rating, comments]
+    global MOVIE_REVIEWS
+    if not movie_id in MOVIE_REVIEWS:
+        MOVIE_REVIEWS.update({movie_id: review})
+    else:
+        MOVIE_REVIEWS[movie_id].append(review)
+    print(MOVIE_REVIEWS)
     return redirect(url_for('hello'))

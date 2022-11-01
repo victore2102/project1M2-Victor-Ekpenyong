@@ -1,0 +1,145 @@
+body {
+    text-align: center;
+    background-image: url(../images/background.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #ffffff;
+}
+
+#title {
+    font-size:2rem;
+    font-weight: 800;
+    text-shadow: 2px 4px rgba(52, 30, 0, 0.5);
+}
+#feat {
+    font-size:2rem;
+    font-weight: 800;
+    text-shadow: 2px 4px rgba(52, 30, 0, 0.5);
+}
+
+#name h2{
+    font-weight: 800;
+    text-shadow: 3px 6px rgba(208, 208, 211, 0.5);
+    font-size: 3rem;
+    color: rgb(236, 155, 155);
+}
+
+#name h3{
+    font-size:1.5rem;
+    font-weight: 600;
+    text-shadow: 2px 4px rgba(52, 30, 0, 0.5);
+    font-style: italic;
+}
+
+#name2 h2{
+    font-weight: 900;
+    text-shadow: 3px 6px rgba(208, 208, 211, 0.5);
+    font-size: 3.5rem;
+    color: rgb(236, 155, 155);
+}
+
+#name2 h3{
+    font-size:1.5rem;
+    font-weight: 700;
+    text-shadow: 2px 4px rgba(52, 30, 0, 0.5);
+    font-style: italic;
+}
+
+.summary {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-shadow: 3px 6px rgba(163, 163, 170, 0.5);
+    color: #341E00;
+}
+
+.summary h2 {
+    margin-bottom: 10%;
+}
+
+.summary h2:hover {
+    color: #680f29;
+    font-weight: 950;
+}
+
+.poster {
+    width: 30%;
+    float: left;
+}
+.poster img {
+    max-width: 100%;
+    max-height: 100%;
+    filter: drop-shadow(0.5rem 0.5rem 0.6rem rgba(255, 255, 255, 0.8));
+}
+.poster h4 {
+    width: 100%;
+    float: left;
+    font-size: 3rem;
+    font-weight: 800;
+    text-shadow: 3px 6px rgba(50, 50, 70, 0.5);
+}
+
+.rank {
+    font-size: 7rem;
+    font-weight: 800;
+    text-shadow: 3px 6px rgba(50, 50, 70, 0.5);
+}
+.rank h2 {
+    margin-top: 0%;
+    text-shadow: 3px 6px rgba(208, 208, 211, 0.5);
+    color: #341E00;
+}
+
+.wiki {
+    width: 100%;
+    font-size: 3rem;
+    font-weight: 800;
+    text-shadow: 3px 6px rgba(50, 50, 70, 0.5);
+}
+
+.wiki a:link, .wiki a:visited {
+    color: rgb(248, 213, 213);
+}
+
+.wiki a:hover {
+    color: rgb(236, 155, 155);
+}
+
+.footer {
+    width: 100%;
+    float: left;
+    margin-top: 5%;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-shadow: 3px 6px rgba(50, 50, 70, 0.5);
+}
+
+.specific {
+    width: 100%;
+    float: left;
+    margin-top: 5%;
+}
+
+select {
+    border: 1px solid #999;
+    font-size: 1.2rem;
+    color: #341E00;
+    background-color: rgb(236, 155, 155);
+    border-radius: 5px;
+    box-shadow: 4px 4px #828181;
+    font-weight: 600;
+}
+
+#button {
+    color: #341E00;
+    background-color: rgb(236, 155, 155);
+    border-radius: 24px;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 1.5rem;
+    font-weight: 600;
+    justify-content: center;
+    text-align: center;
+    letter-spacing: .2;
+    margin-left: 1%;
+    box-shadow: 4px 4px #828181;
+  }

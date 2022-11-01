@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title id="title">Trending Movies : {{title}}</title>
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/main.css') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="../static/images/favicon.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../static/images/favicon.png">
+    </head>
+    <body>
+        <h1 id="title">Trending Movies This Week</h1>
+        {% if title %}
+        <div id="name2">
+            <h2>{{title}}</h2>
+            <h3>{{tagline}}</h3>
+        </div>
+        <div class="poster">
+            <img src={{ image }}>
+            <h4>{{genres}}</h4>
+        </div>
+        <div style="background: linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url({{backImage}}); 
+                    float: left;
+                    width: 70%;
+                    justify-content: center;
+                    align-items: center;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    border-radius: 50px;">
+            <div class="rank">
+                <h2># {{ number }}</h2>
+            </div>
+            <div class="summary">
+                <h2>{{ info }}</h2>
+            </div>
+        </div>
+        <div class="wiki">
+            <h4><a href={{ link }} target="_blank">Wikipedia</a></h4>
+        </div>
+        <div class="specific">
+            <form method="GET" action="/">
+                <input id="button" type="submit" value="Go Back To Featured Page!">
+            </form>
+        <div>
+        {% endif %}
+        <div class="footer">
+            <p>&copy Victor Ekpenyong 2022</p>
+            <p>...not really copyrighted, just sounded cool</p>
+        </div>
+    </body>
+</html>

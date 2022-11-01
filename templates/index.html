@@ -28,48 +28,74 @@
             {% endblock %}
         {% endif %} 
         {% endwith %}
-
+        {% if valid == None %}
+            <form method="POST" action="/validate">
+                <button name="validate" value="sign_up" onclick="submitForm()">
+                    Sign Up
+                </button>
+                <button name="validate" value="log_in" onclick="submitForm()">
+                    Log In
+                </button>
+            </form>
+        {% endif %}
+        {% if valid != None %}
+            <form method="POST" action="/validate">
+                <button name="validate" value="log_out" onclick="submitForm()">
+                    Log Out
+                </button>
+            </form>
+            <h2>Welcome - {{valid}}</h2>
+        {% endif %}
         <h1 id="title">Trending Movies This Week</h1>
         <h3 id="feat">Featuring</h3>
         {% if title %}
-        <div id="name">
-            <h2>{{title}}</h2>
-            <h3>{{tagline}}</h3>
-        </div>
-        <div class="poster">
-            <img src={{ image }}>
-            <h4>{{genres}}</h4>
-        </div>
-        <div style="background: linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url({{backImage}}); 
-                    float: left;
-                    width: 70%;
-                    justify-content: center;
-                    align-items: center;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    border-radius: 50px;">
-            <div class="rank">
-                <h2># {{ number }}</h2>
+            <div id="name">
+                <h2>{{title}}</h2>
+                <h3>{{tagline}}</h3>
             </div>
-            <div class="summary">
-                <h2>{{ info }}</h2>
+            <div class="poster">
+                <img src={{ image }}>
+                <h4>{{genres}}</h4>
             </div>
-        </div>
-        <div class="wiki">
-            <h4><a href={{ link }} target="_blank">Wikipedia</a></h4>
-        </div>
-        <div class="specific">
-            <h3>View a Specific Movie Trending this Week!</h3>
-            <form id= "dropdown" method="POST" action="/direct_movie">
-                <select name="movie_rank">
-                    <option value="empty">Select A Movie</option>
-                    {% for i in range(20) %}
-                        <option value= {{i}} >#{{i + 1}} - {{ movieList['results'][i]['original_title'] }}</option>
-                    {% endfor %}
-                </select>
-                <button id="button" onclick="submitForm()">View</button>
-            </form>
-        <div>
+            <div style="background: linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url({{backImage}}); 
+                        float: left;
+                        width: 70%;
+                        justify-content: center;
+                        align-items: center;
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        border-radius: 50px;">
+                <div class="rank">
+                    <h2># {{ number }}</h2>
+                </div>
+                <div class="summary">
+                    <h2>{{ info }}</h2>
+                </div>
+            </div>
+            <div class="wiki">
+                <h4><a href={{ link }} target="_blank">Wikipedia</a></h4>
+            </div>
+            <div class="specific">
+                <h3>View a Specific Movie Trending this Week!</h3>
+                <form id= "dropdown" method="POST" action="/direct_movie">
+                    <select name="movie_rank">
+                        <option value="empty">Select A Movie</option>
+                        {% for i in range(20) %}
+                            <option value= {{i}} >#{{i + 1}} - {{ movieList['results'][i]['original_title'] }}</option>
+                        {% endfor %}
+                    </select>
+                    <button id="button" onclick="submitForm()">View</button>
+                </form>
+            <div>
+            {% if valid == None %}
+                <h2>Sign Up / Log In above to leave a review!</h2>
+            {% endif %}
+            {% if valid != None %}
+                <h1>User Reviews:</h1>
+                <h2>User: Jack</h2>
+                <h3>Rating: 7/10</h3>
+                <h4>{{title}} was a really solid movie</h4>
+            {% endif %}
         {% endif %}
         <div class="footer">
             <p>&copy Victor Ekpenyong 2022</p>

@@ -91,7 +91,7 @@
                 <h2>Sign Up / Log In above to leave a review!</h2>
             {% endif %}
             {% if valid != None %}
-                <form method="POST" action="/addReview">
+                <form method="POST" action="/addReviewMain">
                     <input type="text" name="movieID" value="{{id}}" readonly>
                     <h4>Rating (out of 10)</h4>
                     <input type="text" name="rating">
@@ -99,13 +99,13 @@
                     <input type="text" name="comments">
                     <input type="submit" value="Post">
                 </form>
-                {% if reviews.id %}
+                {% if reviews != None %}
                     <h1>User Reviews:</h1>
-                    {% for i in range(reviews[id]) %}
-                        <h2>User: {{reviews[id][i][0]}}</h2>
-                        <h3>Rating: {{reviews[id][i][1]}}</h3>
-                        <h4>Comments: {{reviews[id][i][2]}}</h4>
-                    {% endfor %}
+                        {% for r in reviews %}
+                            <h2>User: {{r[0]}}</h2>
+                            <h3>Rating: {{r[1]}}</h3>
+                            <h4>Comments: {{r[2]}}</h4>
+                        {% endfor %}
                 {% endif %}
             {% endif %}
         {% endif %}

@@ -9,6 +9,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy_session import flask_scoped_session
 #from models import Members
 
+
 load_dotenv(find_dotenv())
 
 TMDB_API_BASE_URL = 'https://api.themoviedb.org/3/trending/movie/week'
@@ -17,8 +18,22 @@ WIKI_BASE_URL = 'https://en.wikipedia.org/w/api.php'
 GENRE_LIST_BASE_URL = 'https://api.themoviedb.org/3/genre/movie/list'
 TMDB_API_MOVIE_DATA_BASE_URL = 'https://api.themoviedb.org/3/movie/'
 
+db = SQLAlchemy()
 app = Flask(__name__)
 app.secret_key = os.getenv('APP_SECRET_KEY')
+
+app.config['SECRET_KEY'] = app.secret_key
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True)
+
+with app.app_context():
+    db.create_all()
+
+db.init_app(app)
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 #db = SQLAlchemy(app)

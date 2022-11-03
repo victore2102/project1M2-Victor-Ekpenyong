@@ -163,4 +163,27 @@ select {
 #postReview input {
     border-radius: 5px;
     font-size: 15px;
-  }
+}
+
+#postReview textarea {
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+#reviewsBox {
+    background-color: rgb(61, 13, 24);
+    border-radius: 50px;
+    float: left;
+    width: 33%;
+    height: 500px;
+    justify-content: center;
+    overflow-x: auto;
+    overflow-y: auto;
+    word-wrap: break-word;
+    text-align:center;
+}
+#emptyDiv {
+    float: left;
+    width: 33%;
+    height: 500px;
+}

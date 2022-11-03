@@ -190,8 +190,6 @@ def validate_signup():
     global USERS_SET
     if not username in USERS_SET:
         USERS_SET.add(username)
-        #add_user(username)
-        #print([str(u) for u in Members.query.all()])
         global USER_VALID
         USER_VALID = username
         return redirect(url_for('hello'))
@@ -201,6 +199,9 @@ def validate_signup():
 @app.route('/addReviewMain', methods=['GET', 'POST'])
 def new_review_main():
     '''Function which handles HTML form leading to sign up page'''
+    if request.form.get("rating") == 'empty':
+        flash('Rating not selected')
+        return redirect(url_for('hello'))
     movie_id = request.form.get("movieID")
     rating = request.form.get("rating")
     comments = request.form.get("comments")
@@ -214,6 +215,9 @@ def new_review_main():
 @app.route('/addReviewSpecific', methods=['GET', 'POST'])
 def new_review_specific():
     '''Function which handles HTML form leading to sign up page'''
+    if request.form.get("rating") == 'empty':
+        flash('Rating not selected')
+        return redirect(url_for('show_movie', movie_title=trending_json_data['results'][GLOBAL_MOVIE_NUM]['original_title']))
     movie_id = request.form.get("movieID")
     rating = request.form.get("rating")
     comments = request.form.get("comments")

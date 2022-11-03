@@ -93,23 +93,33 @@
             {% if valid != None %}
                 <div id="postReview">
                     <br><br>
+                    <div id="name"><h2>Post A Review Below</h2></div>
                     <form method="POST" action="/addReviewMain">
-                        <input type="text" name="movieID" value="{{id}}" readonly>
-                        <h1 id="title">Rating (out of 10):</h1><br>
-                        <input type="text" name="rating">
-                        <h1 id="title">Comments:</h1><br>
-                        <input type="text" name="comments">
+                        <input type="text" name="movieID" value="{{id}}" readonly><br>
+                        <select name="rating">
+                            <option value="empty">Rating (out of 10):</option>
+                            {% for i in range(11) %}
+                                <option value= "{{i}} / 10" >{{i}} / 10</option>
+                            {% endfor %}
+                        </select><br>
+                        <h1 id="title">Comments:</h1>
+                        <textarea name="comments"></textarea><br>
                         <input id="button" type="submit" value="Post">
                     </form>
                 </div>
                 {% if reviews != None %}
-                    <h1>User Reviews:</h1>
-                        {% for r in reviews %}
-                            <h2>User: {{r[0]}}</h2>
-                            <h3>Rating: {{r[1]}}</h3>
-                            <h4>Comments: {{r[2]}}</h4>
-                        {% endfor %}
-                {% endif %}
+                <div id="name"><h2>User Reviews:</h2></div>
+                    <div id="emptyDiv"></div>
+                    <div id="reviewsBox">
+                    {% for r in reviews %}
+                            <h1 id="title">User: <span style="color: rgb(236, 155, 155);">{{r[0]}}</span></h1>
+                            <h1 id="title">Rating: <span style="color: rgb(236, 155, 155);">{{r[1]}}</span></h1>
+                            <h1 id="title">Comments: <span style="color: rgb(236, 155, 155);">{{r[2]}}</span></h1>
+                            <br>
+                    {% endfor %}
+                    </div>
+                    <div id="emptyDiv"></div>
+            {% endif %}
             {% endif %}
         {% endif %}
         <div class="footer">

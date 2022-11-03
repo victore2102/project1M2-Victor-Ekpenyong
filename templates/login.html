@@ -8,13 +8,31 @@
         <link rel="icon" type="image/png" sizes="16x16" href="../static/images/favicon.png">
     </head>
     <body>
-        <div>
-            <h1>Log In</h1>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% block content %}
+            <div>
+                {% for message in get_flashed_messages() %}
+                    <h3 style="color:red;">{{ message }}</h3>
+                {% endfor %}
+            
+                {% block page_content %}{% endblock %}
+            </div>
+            {% endblock %}
+        {% endif %} 
+        {% endwith %}
+        <div id="signup">
+            <div id="name2"><h2>Log In</h2></div>
             <form method="POST" action="/validateLogin">
-                <h3>UserName</h3>
-                <input type="text" name="UserName">
-                <input type="submit" value="Submit">
+                <h1 id="title">Enter your Username below:</h1><br>
+                <input type="text" name="UserName"><br><br>
+                <input id="button" type="submit" value="Submit">
             </form>
         </div>
+        <div class="specific">
+            <form method="GET" action="/">
+                <input id="button" type="submit" value="Go Back To Featured Page!">
+            </form>
+        <div>
     </body>
 </html>

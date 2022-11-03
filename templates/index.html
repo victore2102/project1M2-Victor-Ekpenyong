@@ -30,21 +30,21 @@
         {% endwith %}
         {% if valid == None %}
             <form method="POST" action="/validate">
-                <button name="validate" value="sign_up" onclick="submitForm()">
+                <button id="button" name="validate" value="sign_up" onclick="submitForm()">
                     Sign Up
                 </button>
-                <button name="validate" value="log_in" onclick="submitForm()">
+                <button id="button" name="validate" value="log_in" onclick="submitForm()">
                     Log In
                 </button>
             </form>
         {% endif %}
         {% if valid != None %}
             <form method="POST" action="/validate">
-                <button name="validate" value="log_out" onclick="submitForm()">
+                <button id="button" name="validate" value="log_out" onclick="submitForm()">
                     Log Out
                 </button>
             </form>
-            <h2>Welcome - {{valid}}</h2>
+            <h1 id="title">Welcome, <span style="color: rgb(236, 155, 155);">{{valid}}</span></h1>
         {% endif %}
         <h1 id="title">Trending Movies This Week</h1>
         <h3 id="feat">Featuring</h3>
@@ -88,17 +88,20 @@
                 </form>
             <div>
             {% if valid == None %}
-                <h2>Sign Up / Log In above to leave a review!</h2>
+            <div id="name"><h2>Sign Up / Log In above to view and leave a review!</h2></div>
             {% endif %}
             {% if valid != None %}
-                <form method="POST" action="/addReviewMain">
-                    <input type="text" name="movieID" value="{{id}}" readonly>
-                    <h4>Rating (out of 10)</h4>
-                    <input type="text" name="rating">
-                    <h4>Comments</h4>
-                    <input type="text" name="comments">
-                    <input type="submit" value="Post">
-                </form>
+                <div id="postReview">
+                    <br><br>
+                    <form method="POST" action="/addReviewMain">
+                        <input type="text" name="movieID" value="{{id}}" readonly>
+                        <h1 id="title">Rating (out of 10):</h1><br>
+                        <input type="text" name="rating">
+                        <h1 id="title">Comments:</h1><br>
+                        <input type="text" name="comments">
+                        <input id="button" type="submit" value="Post">
+                    </form>
+                </div>
                 {% if reviews != None %}
                     <h1>User Reviews:</h1>
                         {% for r in reviews %}

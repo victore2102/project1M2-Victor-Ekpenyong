@@ -6,7 +6,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv, find_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from models import Users
+from flask_sqlalchemy_session import flask_scoped_session
+#from models import Members
 
 load_dotenv(find_dotenv())
 
@@ -19,8 +20,10 @@ TMDB_API_MOVIE_DATA_BASE_URL = 'https://api.themoviedb.org/3/movie/'
 app = Flask(__name__)
 app.secret_key = os.getenv('APP_SECRET_KEY')
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:'
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 #db = SQLAlchemy(app)
+#db.init_app(app)
+#session = flask_scoped_session(session_factory, app)
 
 #GLOBAL_MOVIE_NUM used for page direction to specific movie page
 GLOBAL_MOVIE_NUM = 0
@@ -90,6 +93,12 @@ def app_logic(movie, trending_json_data):
     wiki_link = 'https://en.wikipedia.org/?curid=' + str(wiki['query']['search'][0]['pageid'])
 
     return [movie_title, movie_tagline, movie_poster_url, movie_backdrop_url, wiki_link, movie+1, movie_description, genre_string, trending_json_data, movie_id_num]
+
+#def add_user(username):
+    #user = Members(username=username)
+    #db.add(user)
+    #db.commit()
+
 @app.route('/')
 def hello():
     ''' Opening Function which runs on the first load of application'''
@@ -168,7 +177,8 @@ def validate_login():
     username = str(request.form.get("UserName"))
     global USERS_SET
     if not username in USERS_SET:
-        return redirect(url_for('hello'))
+        flash('User Name does not exist, try again')
+        return redirect(url_for('log_in'))
     global USER_VALID
     USER_VALID = username
     return redirect(url_for('hello'))
@@ -180,10 +190,13 @@ def validate_signup():
     global USERS_SET
     if not username in USERS_SET:
         USERS_SET.add(username)
+        #add_user(username)
+        #print([str(u) for u in Members.query.all()])
         global USER_VALID
         USER_VALID = username
         return redirect(url_for('hello'))
-    return redirect(url_for('hello'))
+    flash('User Name already in use, try again')
+    return redirect(url_for('sign_up'))
 
 @app.route('/addReviewMain', methods=['GET', 'POST'])
 def new_review_main():

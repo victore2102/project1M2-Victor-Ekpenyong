@@ -8,6 +8,24 @@
         <link rel="icon" type="image/png" sizes="16x16" href="../static/images/favicon.png">
     </head>
     <body>
+        {% if valid == None %}
+            <form method="POST" action="/validate">
+                <button id="button" name="validate" value="sign_up" onclick="submitForm()">
+                    Sign Up
+                </button>
+                <button id="button" name="validate" value="log_in" onclick="submitForm()">
+                    Log In
+                </button>
+            </form>
+        {% endif %}
+        {% if valid != None %}
+            <form method="POST" action="/validate">
+                <button id="button" name="validate" value="log_out" onclick="submitForm()">
+                    Log Out
+                </button>
+            </form>
+            <h1 id="title">Welcome, <span style="color: rgb(236, 155, 155);">{{valid}}</span></h1>
+        {% endif %}
         <h1 id="title">Trending Movies This Week</h1>
         {% if title %}
         <div id="name2">
@@ -37,26 +55,26 @@
             <h4><a href={{ link }} target="_blank">Wikipedia</a></h4>
         </div>
         {% if valid == None %}
-                <h2>Sign Up / Log In above to leave a review!</h2>
+        <div id="name"><h2>Sign Up / Log In above to view and leave a review!</h2></div>
+        {% endif %}
+        {% if valid != None %}
+            <form method="POST" action="/addReviewSpecific">
+                <input type="text" name="movieID" value="{{id}}" readonly>
+                <h4>Rating (out of 10)</h4>
+                <input type="text" name="rating">
+                <h4>Comments</h4>
+                <input type="text" name="comments">
+                <input type="submit" value="Post">
+            </form>
+            {% if reviews != None %}
+                <h1>User Reviews:</h1>
+                    {% for r in reviews %}
+                        <h2>User: {{r[0]}}</h2>
+                        <h3>Rating: {{r[1]}}</h3>
+                        <h4>Comments: {{r[2]}}</h4>
+                    {% endfor %}
             {% endif %}
-            {% if valid != None %}
-                <form method="POST" action="/addReviewSpecific">
-                    <input type="text" name="movieID" value="{{id}}" readonly>
-                    <h4>Rating (out of 10)</h4>
-                    <input type="text" name="rating">
-                    <h4>Comments</h4>
-                    <input type="text" name="comments">
-                    <input type="submit" value="Post">
-                </form>
-                {% if reviews != None %}
-                    <h1>User Reviews:</h1>
-                        {% for r in reviews %}
-                            <h2>User: {{r[0]}}</h2>
-                            <h3>Rating: {{r[1]}}</h3>
-                            <h4>Comments: {{r[2]}}</h4>
-                        {% endfor %}
-                {% endif %}
-            {% endif %}
+        {% endif %}
         <div class="specific">
             <form method="GET" action="/">
                 <input id="button" type="submit" value="Go Back To Featured Page!">

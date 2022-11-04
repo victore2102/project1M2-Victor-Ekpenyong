@@ -28,10 +28,8 @@
             {% endblock %}
         {% endif %} 
         {% endwith %}
-        <form method="POST" action="/validate">
-            <button id="button" name="validate" value="log_out" onclick="submitForm()">
-                Log Out
-            </button>
+        <form method="POST" action="/logOut">
+            <input id="button" type="submit" value="Log Out">
         </form>
         <h1 id="title">Welcome, <span style="color: rgb(236, 155, 155);">{{valid}}</span></h1>
         <h1 id="title">Trending Movies This Week</h1>

@@ -144,7 +144,7 @@ def movie_review_list(movie_ID):
     
     return reviews_list
 
-@app.route('/logIn', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def log_in():
     '''Function which handles HTML form leading to sign up page'''
     return render_template('login.html')
@@ -161,7 +161,7 @@ def validate_login():
     user = Member.query.filter_by(username=username).first()
     if user:
         login_user(user)
-        return redirect(url_for('hello'))
+        return redirect(url_for('featuring_page'))
     
     flash('User Name does not exist, try again or click below to Sign Up')
     return redirect(url_for('log_in'))
@@ -188,7 +188,7 @@ def new_review_main():
     '''Function which handles HTML form leading to sign up page'''
     if request.form.get("rating") == 'empty':
         flash('Rating not selected')
-        return redirect(url_for('hello'))
+        return redirect(url_for('featuring_page'))
     movie_id = request.form.get("movieID")
     rating = request.form.get("rating")
     comments = request.form.get("comments")
@@ -196,12 +196,12 @@ def new_review_main():
     new_review = MovieReviews(movie_ID=movie_id, user=current_user.username, rating=rating, comments=comments)
     db.session.add(new_review)
     db.session.commit()
-    return redirect(url_for('hello'))
+    return redirect(url_for('featuring_page'))
 
 
-@app.route('/')
+@app.route('/featuring')
 @login_required
-def hello():
+def featuring_page():
     ''' Opening Function which runs on the first load of application'''
     response1 = requests.get(
         TMDB_API_BASE_URL,
@@ -226,7 +226,7 @@ def direct():
     '''Function which handles HTML form leading to direction to movie specific page'''
     if request.form.get("movie_rank") == 'empty':
         flash('Movie Was Not Selected Below')
-        return redirect(url_for('hello'))
+        return redirect(url_for('featuring_page'))
     
     global GLOBAL_MOVIE_NUM
     GLOBAL_MOVIE_NUM = int(request.form.get("movie_rank"))
@@ -252,15 +252,12 @@ def show_movie(movie_title= None):
     image=html_elements[2], backImage=html_elements[3], link=html_elements[4], 
     number=html_elements[5], info=html_elements[6], genres=html_elements[7], movieList=html_elements[8], id=html_elements[9], valid=current_user.username, reviews=movie_reviews)
 
-@app.route('/validate', methods=['GET', 'POST'])
+@app.route('/logOut', methods=['GET', 'POST'])
 @login_required
-def validate_direction():
-    '''Function which handles HTML form leading to sign up page'''
-    next_page = str(request.form.get("validate"))
-    if next_page == 'log_out':
-        logout_user()
-        return redirect(url_for('hello'))
-    return redirect(url_for(next_page))
+def log_out():
+    '''Function which handles user Log Out'''
+    logout_user()
+    return redirect(url_for('log_in'))
 
 @app.route('/addReviewSpecific', methods=['GET', 'POST'])
 @login_required

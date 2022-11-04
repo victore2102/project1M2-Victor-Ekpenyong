@@ -21,91 +21,74 @@
             {% endblock %}
         {% endif %} 
         {% endwith %}
-        {% if valid == None %}
-            <form method="POST" action="/validate">
-                <button id="button" name="validate" value="sign_up" onclick="submitForm()">
-                    Sign Up
-                </button>
-                <button id="button" name="validate" value="log_in" onclick="submitForm()">
-                    Log In
-                </button>
-            </form>
-        {% endif %}
-        {% if valid != None %}
-            <form method="POST" action="/validate">
-                <button id="button" name="validate" value="log_out" onclick="submitForm()">
-                    Log Out
-                </button>
-            </form>
-            <h1 id="title">Welcome, <span style="color: rgb(236, 155, 155);">{{valid}}</span></h1>
-        {% endif %}
+        <form method="POST" action="/validate">
+            <button id="button" name="validate" value="log_out" onclick="submitForm()">
+                Log Out
+            </button>
+        </form>
+        <h1 id="title">Welcome, <span style="color: rgb(236, 155, 155);">{{valid}}</span></h1>
         <h1 id="title">Trending Movies This Week</h1>
         {% if title %}
-        <div id="name2">
-            <h2>{{title}}</h2>
-            <h3>{{tagline}}</h3>
-        </div>
-        <div class="poster">
-            <img src={{ image }}>
-            <h4>{{genres}}</h4>
-        </div>
-        <div style="background: linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url({{backImage}}); 
-                    float: left;
-                    width: 70%;
-                    justify-content: center;
-                    align-items: center;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    border-radius: 50px;">
+            <div id="name2">
+                <h2>{{title}}</h2>
+                <h3>{{tagline}}</h3>
+            </div>
+            <div class="poster">
+                <img src={{ image }}>
+                <h4>{{genres}}</h4>
+            </div>
+            <div style="background: linear-gradient(rgba(255,255,255,.6), rgba(255,255,255,.6)), url({{backImage}}); 
+                        float: left;
+                        width: 70%;
+                        justify-content: center;
+                        align-items: center;
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        border-radius: 50px;">
             <div class="rank">
                 <h2># {{ number }}</h2>
             </div>
             <div class="summary">
                 <h2>{{ info }}</h2>
             </div>
-        </div>
-        <div class="wiki">
-            <h4><a href={{ link }} target="_blank">Wikipedia</a></h4>
-        </div>
-        {% if valid == None %}
-        <div style="float: left; width:100%"><div id="name"><h2>Sign Up / Log In above to view and leave a review!</h2></div></div>
-        {% endif %}
-        {% if valid != None %}
-        <div id="postReview">
-            <br><br>
-            <div id="name"><h2>Post A Review Below</h2></div>
-            <form method="POST" action="/addReviewSpecific">
-                <input type="text" name="movieID" value="{{id}}" readonly><br>
-                <select name="rating">
-                    <option value="empty">Rating (out of 10):</option>
-                    {% for i in range(11) %}
-                        <option value= "{{i}} / 10" >{{i}} / 10</option>
-                    {% endfor %}
-                </select><br>
-                <h1 id="title">Comments:</h1>
-                <textarea name="comments"></textarea><br>
-                <input id="button" type="submit" value="Post">
-            </form>
-        </div>
+            </div>
+            <div class="wiki">
+                <h4><a href={{ link }} target="_blank">Wikipedia</a></h4>
+            </div>
+            <div id="postReview">
+                <br><br>
+                <div id="name"><h2>Post A Review Below</h2></div>
+                <form method="POST" action="/addReviewSpecific">
+                    <input type="text" name="movieID" value="{{id}}" readonly><br>
+                    <select name="rating">
+                        <option value="empty">Rating (out of 10):</option>
+                        {% for i in range(11) %}
+                            <option value= "{{i}} / 10" >{{i}} / 10</option>
+                        {% endfor %}
+                    </select><br>
+                    <h1 id="title">Comments:</h1>
+                    <textarea name="comments"></textarea><br>
+                    <input id="button" type="submit" value="Post">
+                </form>
+            </div>
             {% if reviews != None %}
                 <div id="name"><h2>User Reviews:</h2></div>
-                    <div id="emptyDiv"></div>
-                    <div id="reviewsBox">
+                <div id="emptyDiv"></div>
+                <div id="reviewsBox">
                     {% for r in reviews %}
                             <h1 id="title">User: <span style="color: rgb(236, 155, 155);">{{r[0]}}</span></h1>
                             <h1 id="title">Rating: <span style="color: rgb(236, 155, 155);">{{r[1]}}</span></h1>
                             <h1 id="title">Comments: <span style="color: rgb(236, 155, 155);">{{r[2]}}</span></h1>
                             <br>
                     {% endfor %}
-                    </div>
-                    <div id="emptyDiv"></div>
+                </div>
+                <div id="emptyDiv"></div>
             {% endif %}
-        {% endif %}
-        <div class="specific">
-            <form method="GET" action="/">
-                <input id="button" type="submit" value="Go Back To Featured Page!">
-            </form>
-        <div>
+            <div class="specific">
+                <form method="GET" action="/">
+                    <input id="button" type="submit" value="Go Back To Featured Page!">
+                </form>
+            <div>
         {% endif %}
         <div class="footer">
             <p>&copy Victor Ekpenyong 2022</p>

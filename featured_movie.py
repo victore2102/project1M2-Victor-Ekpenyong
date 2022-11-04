@@ -5,8 +5,8 @@ import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv, find_dotenv
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_sqlalchemy_session import flask_scoped_session
+from flask_login import LoginManager, login_required, current_user, login_user, logout_user
+from flask_login import UserMixin
 #from models import Members
 
 
@@ -18,7 +18,6 @@ WIKI_BASE_URL = 'https://en.wikipedia.org/w/api.php'
 GENRE_LIST_BASE_URL = 'https://api.themoviedb.org/3/genre/movie/list'
 TMDB_API_MOVIE_DATA_BASE_URL = 'https://api.themoviedb.org/3/movie/'
 
-db = SQLAlchemy()
 app = Flask(__name__)
 app.secret_key = os.getenv('APP_SECRET_KEY')
 
@@ -26,27 +25,41 @@ app.config['SECRET_KEY'] = app.secret_key
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
 db = SQLAlchemy(app)
 
-class User(db.Model):
+class MovieReviews(db.Model):
+    '''Movie Review Table'''
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
+    movie_ID = db.Column(db.String(6), unique=False, nullable=False)
+    user = db.Column(db.String(50), unique=False, nullable=False)
+    rating = db.Column(db.String(8), unique=False, nullable=False)
+    comments = db.Column(db.String(200), unique=False, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"{self.user}-{self.rating}-{self.comments}--END--"
+
+class Member(UserMixin, db.Model):
+    '''User DB Table'''
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"Member with username: {self.username}"
+
+login_manager = LoginManager()
+login_manager.login_view = 'log_in'
+login_manager.init_app(app)
+
 
 with app.app_context():
     db.create_all()
 
-db.init_app(app)
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URI')
-#db = SQLAlchemy(app)
-#db.init_app(app)
-#session = flask_scoped_session(session_factory, app)
+@login_manager.user_loader
+def load_member(member_id):
+    return Member.query.get(int(member_id))
 
-#GLOBAL_MOVIE_NUM used for page direction to specific movie page
+
 GLOBAL_MOVIE_NUM = 0
 trending_json_data = []
-#Global vars which will be replaced once database is figured out
-USER_VALID = None
-USERS_SET = set()
-MOVIE_REVIEWS = dict()
 
 
 def app_logic(movie, trending_json_data):
@@ -109,12 +122,85 @@ def app_logic(movie, trending_json_data):
 
     return [movie_title, movie_tagline, movie_poster_url, movie_backdrop_url, wiki_link, movie+1, movie_description, genre_string, trending_json_data, movie_id_num]
 
-#def add_user(username):
-    #user = Members(username=username)
-    #db.add(user)
-    #db.commit()
+
+def movie_review_exists(movie_ID):
+    '''Checks to see if review(s) exists for a movie'''
+    exists = MovieReviews.query.filter_by(movie_ID=movie_ID).first()
+    if exists:
+        return True
+    return False
+
+def movie_review_list(movie_ID):
+    '''Return list of all reviews for movie_ID'''
+    reviews_list = []
+    reviews = str(MovieReviews.query.filter_by(movie_ID=movie_ID).all())
+    filtered_reviews = reviews.lstrip("[")
+    filtered_reviews = filtered_reviews.rstrip("]")
+    reviews_split = list(filtered_reviews.split("--END--,"))
+
+    for r in reviews_split:
+        r_split = list(r.split("-"))
+        reviews_list.append(r_split)
+    
+    return reviews_list
+
+@app.route('/logIn', methods=['GET', 'POST'])
+def log_in():
+    '''Function which handles HTML form leading to sign up page'''
+    return render_template('login.html')
+
+@app.route('/signUp', methods=['GET', 'POST'])
+def sign_up():
+    '''Function which handles HTML form leading to sign up page'''
+    return render_template('signup.html')
+
+@app.route('/validateLogin', methods=['GET', 'POST'])
+def validate_login():
+    '''Function which handles HTML form leading to sign up page'''
+    username = str(request.form.get("UserName"))
+    user = Member.query.filter_by(username=username).first()
+    if user:
+        login_user(user)
+        return redirect(url_for('hello'))
+    
+    flash('User Name does not exist, try again or click below to Sign Up')
+    return redirect(url_for('log_in'))
+    
+
+@app.route('/validateSignup', methods=['GET', 'POST'])
+def validate_signup():
+    '''Function which handles HTML form leading to sign up page'''
+    username = str(request.form.get("UserName"))
+    user = Member.query.filter_by(username=username).first()
+    if user:
+        flash('User Name already in use, try again or click below to Log In')
+        return redirect(url_for('sign_up'))
+    
+    new_user = Member(username = username)
+    db.session.add(new_user)
+    db.session.commit()
+    return redirect(url_for('log_in'))
+    
+
+@app.route('/addReviewMain', methods=['GET', 'POST'])
+@login_required
+def new_review_main():
+    '''Function which handles HTML form leading to sign up page'''
+    if request.form.get("rating") == 'empty':
+        flash('Rating not selected')
+        return redirect(url_for('hello'))
+    movie_id = request.form.get("movieID")
+    rating = request.form.get("rating")
+    comments = request.form.get("comments")
+
+    new_review = MovieReviews(movie_ID=movie_id, user=current_user.username, rating=rating, comments=comments)
+    db.session.add(new_review)
+    db.session.commit()
+    return redirect(url_for('hello'))
+
 
 @app.route('/')
+@login_required
 def hello():
     ''' Opening Function which runs on the first load of application'''
     response1 = requests.get(
@@ -127,15 +213,15 @@ def hello():
     trending_json_data = response1.json()
     movie = random.randint(0,19)
     html_elements = app_logic(movie, trending_json_data)
-    movieReviews = None
-    global MOVIE_REVIEWS
-    if MOVIE_REVIEWS.get(html_elements[9]):
-        movieReviews = MOVIE_REVIEWS.get(html_elements[9])
+    movie_reviews = None
+    if movie_review_exists(html_elements[9]):
+        movie_reviews = movie_review_list(html_elements[9])
     return render_template('index.html', title=html_elements[0], tagline=html_elements[1], 
     image=html_elements[2], backImage=html_elements[3], link=html_elements[4], 
-    number=html_elements[5], info=html_elements[6], genres=html_elements[7], movieList=html_elements[8], id=html_elements[9], valid=USER_VALID, reviews=movieReviews)
+    number=html_elements[5], info=html_elements[6], genres=html_elements[7], movieList=html_elements[8], id=html_elements[9], valid=current_user.username, reviews=movie_reviews)
 
 @app.route('/direct_movie', methods=['GET', 'POST'])
+@login_required
 def direct():
     '''Function which handles HTML form leading to direction to movie specific page'''
     if request.form.get("movie_rank") == 'empty':
@@ -147,6 +233,7 @@ def direct():
     return redirect(url_for('show_movie', movie_title=trending_json_data['results'][GLOBAL_MOVIE_NUM]['original_title']))
 
 @app.route('/<movie_title>')
+@login_required
 def show_movie(movie_title= None):
     '''Function which renders movie specific page with ability to redirect back to main page'''
     response1 = requests.get(
@@ -158,76 +245,25 @@ def show_movie(movie_title= None):
     global trending_json_data
     trending_json_data = response1.json()
     html_elements = app_logic(GLOBAL_MOVIE_NUM, trending_json_data)
-    movieReviews = None
-    global MOVIE_REVIEWS
-    if MOVIE_REVIEWS.get(html_elements[9]):
-        movieReviews = MOVIE_REVIEWS.get(html_elements[9])
+    movie_reviews = None
+    if movie_review_exists(html_elements[9]):
+        movie_reviews = movie_review_list(html_elements[9])
     return render_template('movie.html', title=html_elements[0], tagline=html_elements[1], 
     image=html_elements[2], backImage=html_elements[3], link=html_elements[4], 
-    number=html_elements[5], info=html_elements[6], genres=html_elements[7], movieList=html_elements[8], id=html_elements[9], valid=USER_VALID, reviews=movieReviews)
+    number=html_elements[5], info=html_elements[6], genres=html_elements[7], movieList=html_elements[8], id=html_elements[9], valid=current_user.username, reviews=movie_reviews)
 
 @app.route('/validate', methods=['GET', 'POST'])
+@login_required
 def validate_direction():
     '''Function which handles HTML form leading to sign up page'''
     next_page = str(request.form.get("validate"))
     if next_page == 'log_out':
-        global USER_VALID
-        USER_VALID = None
+        logout_user()
         return redirect(url_for('hello'))
     return redirect(url_for(next_page))
 
-@app.route('/signUp', methods=['GET', 'POST'])
-def sign_up():
-    '''Function which handles HTML form leading to sign up page'''
-    return render_template('signup.html')
-
-@app.route('/logIn', methods=['GET', 'POST'])
-def log_in():
-    '''Function which handles HTML form leading to sign up page'''
-    return render_template('login.html')
-
-@app.route('/validateLogin', methods=['GET', 'POST'])
-def validate_login():
-    '''Function which handles HTML form leading to sign up page'''
-    username = str(request.form.get("UserName"))
-    global USERS_SET
-    if not username in USERS_SET:
-        flash('User Name does not exist, try again')
-        return redirect(url_for('log_in'))
-    global USER_VALID
-    USER_VALID = username
-    return redirect(url_for('hello'))
-
-@app.route('/validateSignup', methods=['GET', 'POST'])
-def validate_signup():
-    '''Function which handles HTML form leading to sign up page'''
-    username = str(request.form.get("UserName"))
-    global USERS_SET
-    if not username in USERS_SET:
-        USERS_SET.add(username)
-        global USER_VALID
-        USER_VALID = username
-        return redirect(url_for('hello'))
-    flash('User Name already in use, try again')
-    return redirect(url_for('sign_up'))
-
-@app.route('/addReviewMain', methods=['GET', 'POST'])
-def new_review_main():
-    '''Function which handles HTML form leading to sign up page'''
-    if request.form.get("rating") == 'empty':
-        flash('Rating not selected')
-        return redirect(url_for('hello'))
-    movie_id = request.form.get("movieID")
-    rating = request.form.get("rating")
-    comments = request.form.get("comments")
-
-    review = [USER_VALID, rating, comments]
-    global MOVIE_REVIEWS
-    if not movie_id in MOVIE_REVIEWS:
-        MOVIE_REVIEWS.update({movie_id: []})
-    MOVIE_REVIEWS[movie_id].append(review)
-    return redirect(url_for('hello'))
 @app.route('/addReviewSpecific', methods=['GET', 'POST'])
+@login_required
 def new_review_specific():
     '''Function which handles HTML form leading to sign up page'''
     if request.form.get("rating") == 'empty':
@@ -237,11 +273,8 @@ def new_review_specific():
     rating = request.form.get("rating")
     comments = request.form.get("comments")
 
-    review = [USER_VALID, rating, comments]
-    global MOVIE_REVIEWS
-    if MOVIE_REVIEWS.get(movie_id):
-        MOVIE_REVIEWS[movie_id].append(review)
-    else:
-        MOVIE_REVIEWS.update({movie_id: []})
-        MOVIE_REVIEWS[movie_id].append(review)
+    new_review = MovieReviews(movie_ID=movie_id, user=current_user.username, rating=rating, comments=comments)
+    db.session.add(new_review)
+    db.session.commit()
+
     return redirect(url_for('show_movie', movie_title=trending_json_data['results'][GLOBAL_MOVIE_NUM]['original_title']))

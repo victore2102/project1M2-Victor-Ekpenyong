@@ -28,24 +28,12 @@
             {% endblock %}
         {% endif %} 
         {% endwith %}
-        {% if valid == None %}
-            <form method="POST" action="/validate">
-                <button id="button" name="validate" value="sign_up" onclick="submitForm()">
-                    Sign Up
-                </button>
-                <button id="button" name="validate" value="log_in" onclick="submitForm()">
-                    Log In
-                </button>
-            </form>
-        {% endif %}
-        {% if valid != None %}
-            <form method="POST" action="/validate">
-                <button id="button" name="validate" value="log_out" onclick="submitForm()">
-                    Log Out
-                </button>
-            </form>
-            <h1 id="title">Welcome, <span style="color: rgb(236, 155, 155);">{{valid}}</span></h1>
-        {% endif %}
+        <form method="POST" action="/validate">
+            <button id="button" name="validate" value="log_out" onclick="submitForm()">
+                Log Out
+            </button>
+        </form>
+        <h1 id="title">Welcome, <span style="color: rgb(236, 155, 155);">{{valid}}</span></h1>
         <h1 id="title">Trending Movies This Week</h1>
         <h3 id="feat">Featuring</h3>
         {% if title %}
@@ -86,40 +74,35 @@
                     </select>
                     <button id="button" onclick="submitForm()">View</button>
                 </form>
-            <div>
-            {% if valid == None %}
-            <div id="name"><h2>Sign Up / Log In above to view and leave a review!</h2></div>
-            {% endif %}
-            {% if valid != None %}
-                <div id="postReview">
-                    <br><br>
-                    <div id="name"><h2>Post A Review Below</h2></div>
-                    <form method="POST" action="/addReviewMain">
-                        <input type="text" name="movieID" value="{{id}}" readonly><br>
-                        <select name="rating">
-                            <option value="empty">Rating (out of 10):</option>
-                            {% for i in range(11) %}
-                                <option value= "{{i}} / 10" >{{i}} / 10</option>
-                            {% endfor %}
-                        </select><br>
-                        <h1 id="title">Comments:</h1>
-                        <textarea name="comments"></textarea><br>
-                        <input id="button" type="submit" value="Post">
-                    </form>
-                </div>
-                {% if reviews != None %}
+            </div>
+            <div id="postReview">
+                <br><br>
+                <div id="name"><h2>Post A Review Below</h2></div>
+                <form method="POST" action="/addReviewMain">
+                    <input type="text" name="movieID" value="{{id}}" readonly><br>
+                    <select name="rating">
+                        <option value="empty">Rating (out of 10):</option>
+                        {% for i in range(11) %}
+                            <option value= "{{i}} / 10" >{{i}} / 10</option>
+                        {% endfor %}
+                    </select><br>
+                    <h1 id="title">Comments:</h1>
+                    <textarea name="comments"></textarea><br>
+                    <input id="button" type="submit" value="Post">
+                </form>
+            </div>
+            {% if reviews != None %}
                 <div id="name"><h2>User Reviews:</h2></div>
-                    <div id="emptyDiv"></div>
-                    <div id="reviewsBox">
+                <div id="emptyDiv"></div>
+                <div id="reviewsBox">
                     {% for r in reviews %}
                             <h1 id="title">User: <span style="color: rgb(236, 155, 155);">{{r[0]}}</span></h1>
                             <h1 id="title">Rating: <span style="color: rgb(236, 155, 155);">{{r[1]}}</span></h1>
                             <h1 id="title">Comments: <span style="color: rgb(236, 155, 155);">{{r[2]}}</span></h1>
                             <br>
                     {% endfor %}
-                    </div>
-                    <div id="emptyDiv"></div>
-            {% endif %}
+                </div>
+                <div id="emptyDiv"></div>
             {% endif %}
         {% endif %}
         <div class="footer">

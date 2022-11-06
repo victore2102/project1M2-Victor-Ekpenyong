@@ -25,8 +25,11 @@
             <h1 id="title">Trending Movies This Week</h1>
             <div id="name2"><h2>Log In To Continue</h2></div>
             <form method="POST" action="/validateLogin">
-                <h1 id="title">Enter your Username below:</h1><br>
-                <input type="text" name="UserName"><br><br>
+                <h1 id="title">Username:</h1>
+                <input type="text" name="UserName" required><br>
+                <h1 id="title">Password:</h1>
+                <input type="password" name="PassWord" id="pass" required><br>
+                <br>
                 <input id="button" type="submit" value="Log In">
             </form><br>
             <h1 id="title">Not registerd? Click below</h1>

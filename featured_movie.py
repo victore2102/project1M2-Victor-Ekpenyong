@@ -34,12 +34,13 @@ class MovieReviews(db.Model):
     rating = db.Column(db.String(8), unique=False, nullable=False)
     comments = db.Column(db.String(200), unique=False, nullable=False)
     def __repr__(self) -> str:
-        return f"{self.user}-{self.rating}-{self.comments}-{self.movie_ID}--END--"
+        return f"{self.user}-&-{self.rating}-&-{self.comments}-&-{self.movie_ID}--END--"
 
 class Member(UserMixin, db.Model):
     '''User DB Table'''
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(50), unique=False, nullable=False)
 
     def __repr__(self) -> str:
         return f"Member with username: {self.username}"
@@ -135,9 +136,9 @@ def movie_review_list(movie_ID):
     reviews = str(MovieReviews.query.filter_by(movie_ID=movie_ID).all())
     filtered_reviews = reviews.lstrip("[")
     filtered_reviews = filtered_reviews.rstrip("--END--]")
-    reviews_split = list(filtered_reviews.split("--END--,"))
+    reviews_split = list(filtered_reviews.split("--END--, "))
     for r in reviews_split:
-        r_split = list(r.split("-"))
+        r_split = list(r.split("-&-"))
         reviews_list.append(r_split)
     return reviews_list
 
@@ -157,22 +158,25 @@ def sign_up():
 def validate_login():
     '''Function which handles login validation'''
     username = str(request.form.get("UserName"))
-    user = Member.query.filter_by(username=username).first()
+    password = str(request.form.get("PassWord"))
+    user = Member.query.filter_by(username=username, password=password).first()
     if user:
         login_user(user)
         return redirect(url_for('featuring_page'))
-    flash('User Name does not exist, try again or click below to Sign Up')
+    flash('Username and/or Passeword invalid, try again or click below to Sign Up')
     return redirect(url_for('log_in'))
     
 @app.route('/validateSignup', methods=['GET', 'POST'])
 def validate_signup():
     '''Function which handles signup validation'''
     username = str(request.form.get("UserName"))
+    password = str(request.form.get("PassWord"))
+    print("Password Valid? - ", request.form.get("passwordValid"))
     user = Member.query.filter_by(username=username).first()
     if user:
         flash('User Name already in use, try again or click below to Log In')
         return redirect(url_for('sign_up'))
-    new_user = Member(username = username)
+    new_user = Member(username = username, password=password)
     db.session.add(new_user)
     db.session.commit()
     return redirect(url_for('log_in'))
@@ -270,15 +274,28 @@ def new_review_specific():
     db.session.commit()
     return redirect(url_for('show_movie', movie_title=TRENDING_JSON_DATA['results'][GLOBAL_MOVIE_NUM]['original_title']))
 
-@app.route('/deleteReview', methods=['GET', 'POST'])
+@app.route('/deleteReviewMain', methods=['GET', 'POST'])
 @login_required
-def delete_review():
+def delete_review_main():
     '''Function which handles the deletion of a review from featuring page'''
     review = request.form.get("reviewToDelete")
     filtered_review = review.lstrip("['")
     filtered_review = filtered_review.rstrip("']")
-    review_to_delete = filtered_review.split("', '")
-    MovieReviews.query.filter_by(movie_ID=review_to_delete[3], user=review_to_delete[0], rating=review_to_delete[1], comments=review_to_delete[2]).delete()
+    review_to_delete = list(filtered_review.split("', '"))
+    MovieReviews.query.filter_by(movie_ID=str(review_to_delete[3]), user=str(review_to_delete[0]), rating=str(review_to_delete[1]), comments=str(review_to_delete[2])).delete()
     db.session.commit()
     flash('Review Deleted...')
     return redirect(url_for('featuring_page'))
+
+@app.route('/deleteReviewSpecific', methods=['GET', 'POST'])
+@login_required
+def delete_review_specific():
+    '''Function which handles the deletion of a review from featuring page'''
+    review = request.form.get("reviewToDelete")
+    filtered_review = review.lstrip("['")
+    filtered_review = filtered_review.rstrip("']")
+    review_to_delete = list(filtered_review.split("', '"))
+    MovieReviews.query.filter_by(movie_ID=str(review_to_delete[3]), user=str(review_to_delete[0]), rating=str(review_to_delete[1]), comments=str(review_to_delete[2])).delete()
+    db.session.commit()
+    flash('Review Deleted...')
+    return redirect(url_for('show_movie', movie_title=TRENDING_JSON_DATA['results'][GLOBAL_MOVIE_NUM]['original_title']))

@@ -5,6 +5,7 @@ body {
     background-repeat: none;
     background-size: cover;
     color: #ffffff;
+    background-attachment: fixed;
 }
 
 #title {

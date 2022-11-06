@@ -33,8 +33,9 @@ class MovieReviews(db.Model):
     user = db.Column(db.String(50), unique=False, nullable=False)
     rating = db.Column(db.String(8), unique=False, nullable=False)
     comments = db.Column(db.String(200), unique=False, nullable=False)
+    date = db.Column(db.String(100), unique=False, nullable=False)
     def __repr__(self) -> str:
-        return f"{self.user}-&-{self.rating}-&-{self.comments}-&-{self.movie_ID}--END--"
+        return f"{self.user}-&-{self.rating}-&-{self.comments}-&-{self.movie_ID}-&-{self.date}--END--"
 
 class Member(UserMixin, db.Model):
     '''User DB Table'''
@@ -254,7 +255,8 @@ def new_review_main():
     movie_id = request.form.get("movieID")
     rating = request.form.get("rating")
     comments = request.form.get("comments")
-    new_review = MovieReviews(movie_ID=movie_id, user=str(current_user.username), rating=rating, comments=comments)
+    date = request.form.get("date")
+    new_review = MovieReviews(movie_ID=movie_id, user=str(current_user.username), rating=rating, comments=comments, date=date)
     db.session.add(new_review)
     db.session.commit()
     return redirect(url_for('featuring_page'))
@@ -269,7 +271,8 @@ def new_review_specific():
     movie_id = request.form.get("movieID")
     rating = request.form.get("rating")
     comments = request.form.get("comments")
-    new_review = MovieReviews(movie_ID=movie_id, user=str(current_user.username), rating=rating, comments=comments)
+    date = request.form.get("date")
+    new_review = MovieReviews(movie_ID=movie_id, user=str(current_user.username), rating=rating, comments=comments, date=date)
     db.session.add(new_review)
     db.session.commit()
     return redirect(url_for('show_movie', movie_title=TRENDING_JSON_DATA['results'][GLOBAL_MOVIE_NUM]['original_title']))

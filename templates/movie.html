@@ -55,7 +55,11 @@
             </div>
             <div id="postReview">
                 <br><br>
-                <div id="name"><h2>Post A Review Below</h2></div>
+                {% if reviews == None %}
+                    <div id="name"><h2>Be The First To Post A Review Below</h2></div>
+                {% else %}
+                    <div id="name"><h2>Post A Review Below</h2></div>
+                {% endif %}
                 <form method="POST" action="/addReviewSpecific">
                     <input type="text" name="movieID" value="{{id}}" readonly><br>
                     <select name="rating">
@@ -66,6 +70,7 @@
                     </select><br>
                     <h1 id="title">Comments:</h1>
                     <textarea name="comments"></textarea><br>
+                    <input type="hidden" name="date" value="" id="reviewDate">
                     <input id="button" type="submit" value="Post">
                 </form>
             </div>
@@ -74,6 +79,7 @@
                 <div id="emptyDiv"></div>
                 <div id="reviewsBox">
                     {% for r in reviews %}
+                            <h3>{{r[4]}}</h3>
                             <h1 id="title">User: <span style="color: rgb(236, 155, 155);">{{r[0]}}</span></h1>
                             <h1 id="title">Rating: <span style="color: rgb(236, 155, 155);">{{r[1]}}</span></h1>
                             <h1 id="title">Comments: <span style="color: rgb(236, 155, 155);">{{r[2]}}</span></h1>
@@ -97,5 +103,19 @@
             <p>&copy Victor Ekpenyong 2022</p>
             <p>...not really copyrighted, just sounded cool</p>
         </div>
+        <script>
+            reviewDate = document.getElementById("reviewDate");
+            let d = new Date();
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+            let day = days[d.getDay()];
+
+            let month = months[d.getMonth()];
+            let year = d.getFullYear();
+            let date = d.getDate();
+
+            reviewDate.value = `${day} ${month} ${date}, ${year}`
+        </script>
     </body>
 </html>

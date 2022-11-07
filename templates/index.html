@@ -129,8 +129,9 @@
             let month = months[d.getMonth()];
             let year = d.getFullYear();
             let date = d.getDate();
+            let time = d.toLocaleTimeString();
 
-            reviewDate.value = `${day} ${month} ${date}, ${year}`
+            reviewDate.value = `${day} ${month} ${date}, ${year} - ${time}`
         </script>
     </body>
 </html>

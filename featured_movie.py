@@ -172,7 +172,6 @@ def validate_signup():
     '''Function which handles signup validation'''
     username = str(request.form.get("UserName"))
     password = str(request.form.get("PassWord"))
-    print("Password Valid? - ", request.form.get("passwordValid"))
     user = Member.query.filter_by(username=username).first()
     if user:
         flash('User Name already in use, try again or click below to Log In')

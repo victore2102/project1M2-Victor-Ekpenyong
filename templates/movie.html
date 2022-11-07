@@ -71,7 +71,7 @@
                     <h1 id="title">Comments:</h1>
                     <textarea name="comments"></textarea><br>
                     <input type="hidden" name="date" value="" id="reviewDate">
-                    <input id="button" type="submit" value="Post">
+                    <input id="button" onclick="getDateAndTime()" type="submit" value="Post">
                 </form>
             </div>
             {% if reviews != None %}
@@ -104,18 +104,18 @@
             <p>...not really copyrighted, just sounded cool</p>
         </div>
         <script>
-            reviewDate = document.getElementById("reviewDate");
-            let d = new Date();
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-            let day = days[d.getDay()];
-
-            let month = months[d.getMonth()];
-            let year = d.getFullYear();
-            let time = d.toLocaleTimeString();
-
-            reviewDate.value = `${day} ${month} ${date}, ${year} - ${time}`
+            function getDateAndTime() {
+                reviewDate = document.getElementById("reviewDate");
+                let d = new Date();
+                const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                let day = days[d.getDay()];
+                let month = months[d.getMonth()];
+                let year = d.getFullYear();
+                let date = d.getDate();
+                let time = d.toLocaleTimeString();
+                reviewDate.value = `${day} ${month} ${date}, ${year} - ${time}`
+            }
         </script>
     </body>
 </html>

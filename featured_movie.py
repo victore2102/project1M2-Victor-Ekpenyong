@@ -297,7 +297,7 @@ def delete_review_specific():
     filtered_review = review.lstrip("['")
     filtered_review = filtered_review.rstrip("']")
     review_to_delete = list(filtered_review.split("', '"))
-    MovieReviews.query.filter_by(movie_ID=str(review_to_delete[3]), user=str(review_to_delete[0]), rating=str(review_to_delete[1]), comments=str(review_to_delete[2])).delete()
+    MovieReviews.query.filter_by(movie_ID=str(review_to_delete[3]), user=str(review_to_delete[0]), rating=str(review_to_delete[1]), comments=str(review_to_delete[2]), date=str(review_to_delete[4])).delete()
     db.session.commit()
     flash('Review Deleted...')
     return redirect(url_for('show_movie', movie_title=TRENDING_JSON_DATA['results'][GLOBAL_MOVIE_NUM]['original_title']))

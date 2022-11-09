@@ -1,6 +1,7 @@
 '''Featured Movie Flask App V2 - Victor Ekpenyong (2022)'''
 import os
 import random
+import hashlib
 import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv, find_dotenv
@@ -41,7 +42,7 @@ class Member(UserMixin, db.Model):
     '''User DB Table'''
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(50), unique=False, nullable=False)
+    password = db.Column(db.String(200), unique=False, nullable=False)
 
     def __repr__(self) -> str:
         return f"Member with username: {self.username}"
@@ -159,8 +160,9 @@ def sign_up():
 def validate_login():
     '''Function which handles login validation'''
     username = str(request.form.get("UserName"))
-    password = str(request.form.get("PassWord"))
-    user = Member.query.filter_by(username=username, password=password).first()
+    password = str(request.form.get("PassWord")) + os.getenv('SALT')
+    hashed_password = hashlib.md5(password.encode())
+    user = Member.query.filter_by(username=username, password=str(hashed_password.hexdigest())).first()
     if user:
         login_user(user)
         return redirect(url_for('featuring_page'))
@@ -171,12 +173,13 @@ def validate_login():
 def validate_signup():
     '''Function which handles signup validation'''
     username = str(request.form.get("UserName"))
-    password = str(request.form.get("PassWord"))
+    password = str(request.form.get("PassWord")) + os.getenv('SALT')
+    hashed_password = hashlib.md5(password.encode())
     user = Member.query.filter_by(username=username).first()
     if user:
         flash('User Name already in use, try again or click below to Log In')
         return redirect(url_for('sign_up'))
-    new_user = Member(username = username, password=password)
+    new_user = Member(username = username, password=str(hashed_password.hexdigest()))
     db.session.add(new_user)
     db.session.commit()
     return redirect(url_for('log_in'))

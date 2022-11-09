@@ -13,8 +13,10 @@
 1. User Login / Sign Up 
     * A site viewer must login and/or signup in order to access this application
     * User signup/login includes a username and password field with critea which must be met
+    * Password storage is being hashed with python hashlib module and stored. The hex of a user's password plus a set Salt string is hashed and stored with the database for security measures.
 2. Reviews
     * Logged in users can post reviews about the movie they are viewing and view previous reviews posted by others
+    * Users can delete reviews only they have left
 3. Postgresql Database Used
     * Postgresql database used for both user account storage and review storage in order for persistant data to be present
 ## Initial Set Up
